@@ -1,0 +1,15 @@
+-
+  version: "1.0"
+  author: karun
+  query: "CREATE (user:Users {name:'Karun',last_name:'AB',tokens:3})"
+  rollback: "MATCH (u:Users) WHERE u.name = 'Karun' DELETE u"
+-
+  version: "2.0"
+  author: karun
+  query: "CREATE (user:Users {name:'Mansi',last_name:'Vartak',tokens:6})"
+  rollback: "MATCH (u:Users) WHERE u.name = 'Mansi' DELETE u"
+-
+  version: "3.0"
+  author: karun
+  query: "CREATE (user:Users {name:'Bim',last_name:'Japhet',tokens:6})"
+  rollback: "MATCH (u:Users) WHERE u.name = 'Bim' DELETE u"
