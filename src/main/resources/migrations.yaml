@@ -11,5 +11,5 @@
 -
   version: "3.0"
   author: karun
-  query: "CREATE (user:Users {name:'Bim',last_name:'Japhet',tokens:6})"
+  query: "CREATE (user:Users {name:'Bim',last_name:'Japhet',tokens:9})"
   rollback: "MATCH (u:Users) WHERE u.name = 'Bim' DELETE u"

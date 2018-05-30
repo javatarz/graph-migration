@@ -1,6 +1,6 @@
 package me.karun.migration.graph.model.store
 
-import org.neo4j.driver.v1.{AuthTokens, GraphDatabase}
+import org.neo4j.driver.v1.{AuthTokens, GraphDatabase, StatementResult}
 
 object GraphStore {
   // TODO: read from config
@@ -11,18 +11,13 @@ object GraphStore {
   private val session = GraphDatabase.driver(url, AuthTokens.basic(user, pass)).session
 
   def run(query: String): Boolean = try {
-    session.run(query)
+    execute(query)
     true
   } catch {
     case t: Throwable => handleError(query, t)
   }
 
-  def hasResults(query: String): Boolean = try {
-    val result = session.run(query)
-    result.hasNext
-  } catch {
-    case t: Throwable => handleError(query, t)
-  }
+  def execute(query: String): StatementResult = session.run(query)
 
   private def handleError(query: String, t: Throwable) = {
     println(s"! Error while executing '$query'")

@@ -4,15 +4,32 @@ import java.security.MessageDigest
 
 import me.karun.migration.graph.model.store.GraphStore
 
+import scala.collection.JavaConverters.collectionAsScalaIterableConverter
+
 case class Migration(version: String, author: String, query: String, rollback: Option[String]) {
   def isExecutable: Boolean = {
     val query =
       s"""
          |MATCH (mp:MigrationPlan)-[e:has_executed]->(m:Migration)
-         |WHERE m.hash = '${hash()}'
-         |RETURN m
+         |WHERE m.version = '$version'
+         |RETURN m.hash as hash
        """.stripMargin
-    !GraphStore.hasResults(query)
+    val results = GraphStore.execute(query)
+      .list()
+      .asScala
+      .map(r => r.get("hash"))
+
+    if (results.isEmpty) {
+      true
+    } else if (results.size == 1) {
+      if (results.head.asString().equals(hash())) {
+        false
+      } else {
+        throw new RuntimeException(s"Hash check violated for ${shortLog()} because db.hash (${results.head.asString()}) != migration.hash (${hash()})")
+      }
+    } else {
+      throw new RuntimeException(s"Duplicate migration nodes exist for ${shortLog()}. Invalid data structure. Stopping execution")
+    }
   }
 
   def execute(): Boolean = {
